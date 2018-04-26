@@ -71,66 +71,72 @@ V_sum = cumsum(V, 1);
 
 %% Plotting
 figure(1);
-subplot(1,3,1);plot(t,G,'LineWidth',3);
+subplot(1,3,1);plot(t,G(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Growth rate (�m s^-1)');
-subplot(1,3,2);plot(T_D1,G,'LineWidth',3);
-xlabel('Temperature (�C)');
-ylabel('Growth rate (�m s^-1)');
+ylabel('Growth rate ({\mu}m s^-1)');
+subplot(1,3,2);plot(T_D1,G(:,1),'LineWidth',3);
+xlabel('Temperature (20^{\circ}C)');
+ylabel('Growth rate ({\mu}m s^-1)');
 axis([60,170,0,0.08]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse')
-subplot(1,3,3);plot(t,r,'LineWidth',3);
+subplot(1,3,3);plot(t,Rp(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Radius (�m)');
+ylabel('Radius ({\mu}m)');
 
 figure(2);
-subplot(1,2,1);plot(t,Rp,'LineWidth',3);
+subplot(1,2,1);plot(t,Rp(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Radius (�m)');
+ylabel('Radius ({\mu}m)');
 set(gca,'ytick',0:0.01:0.18);
-subplot(1,2,2);plot(t,v,'LineWidth',3);
+subplot(1,2,2);plot(t,Vp(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Spherical volume (�m^3)');
+ylabel('Spherical volume ({\mu}m^3)');
 set(gca,'ytick',0:0.001:0.025);
 
 figure(3);
 hold on
-for i = 1:numel(Rt1)
-	plot(t(i:end), Rt1(i).cumsum,'LineWidth',1.25);
+for i = 1:n_tsteps
+	plot(t(i:end), Rp(i:end,i),'LineWidth',1.25);
 end
 xlabel('Time (second)');
-ylabel('Radius (�m)');
-set(gca,'ytick',0:0.01:0.18);
+ylabel('Radius ({\mu}m)');
+%set(gca,'ytick',0:0.01:0.18);
 
 figure(4);
 hold on
-for i=1:numel(V1)
-	plot(t(i:end), V1(i).cumsum,'LineWidth',1.25);
+for i=1:n_tsteps
+	plot(t(i:end), V(i:end,i),'LineWidth',1.25);
 end
 xlabel('Time (second)');
-ylabel('Spherical volume (�m^3)');
+ylabel('Spherical volume ({\mu}m^3)');
 set(gca,'ytick',0:0.002:0.024);
 
 figure(5);
-subplot(1,2,1);plot(t,N_D1,'LineWidth',3);
+subplot(1,2,1);plot(t,N(:,1),'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Number of spherulities');
 axis([0,5,0,25]);set(gca,'xtick',0:0.5:5);set(gca,'ytick',0:2:24);
-subplot(1,2,2);plot(T_D1,N_D1,'LineWidth',3);
-xlabel('Temperature (�C)');
+subplot(1,2,2);plot(T(:,1),N(:,1),'LineWidth',3);
+xlabel('Temperature (20^{\circ}C)');
 ylabel('Number of spherulities');
 axis([60,170,0,25]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse');set(gca,'ytick',0:2:24)
-
+%%
 figure(6);
 hold on
-for i=1:numel(Vt1)
-	plot(t(i:end),Vt1(i).cumsum,'LineWidth',1.25);
+for i=1:n_tsteps
+	plot(t(i:end),V_sum(i:end,i),'LineWidth',1.25);
 end
 xlabel('Time (second)');
-ylabel('Spherical volume (�m^3)');
+ylabel('Spherical volume ({\mu}m^3)');
 set(gca,'ytick',0:0.01:0.15);
-
+%%
 figure(7);
-plot(t(1:end),Vt1(1).cumsum,t(26:end),Vt1(26).cumsum,t(51:end),Vt1(51).cumsum,t(101:end),Vt1(101).cumsum,t(151:end),Vt1(151).cumsum,t(201:end),Vt1(201).cumsum,'LineWidth',3);
+start_times = [1, 26, 51, 101, 201];
+n_traces = length(start_times);
+hold on
+for i = 1:n_traces
+	start = start_times(i);
+	plot(t(start:end),V_sum(start:end,start), 'LineWidth',3)
+end
 xlabel('Time (second)');
-ylabel('Spherical volume (�m^3)');
+ylabel('Spherical volume ({\mu}m^3)');
 legend('from 0s --> 5s','from 0.5s --> 5s','from 1s --> 5s','from 2s --> 5s','from 3s --> 5s','from 4s --> 5s')	
