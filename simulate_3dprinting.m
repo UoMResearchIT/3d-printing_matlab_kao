@@ -56,7 +56,8 @@ N =  No * exp(-(1/k) ./ ((T + KtoC) .* (Tm - T - KtoC)));
 % in the calculation of G.
 N(~mask) = 0; 
 
-%%
+%% Crystal volume
+V = N .* 4/3 * pi * Rp .^3; % Total volume of all crystals
 
 % Rt(i).cumsum = cumsum(r(i:end)) = Rt(i)=struct('cumsum',cumsum(r(i:end)))
 for i = 1:n_tsteps
