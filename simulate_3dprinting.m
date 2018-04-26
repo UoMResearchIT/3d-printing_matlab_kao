@@ -49,9 +49,12 @@ delta_Rp = G * t_step;
 Rp = cumsum(delta_Rp, 1, 'omitnan');
 Vp = 4/3 * pi * Rp.^3;
 
-%%
-% PLA nucleation
-N_D1 = No * exp(-(1/k) ./ ((T_D1 + KtoC) .* (Tm - T_D1 - KtoC)));
+%% PLA nucleation
+N =  No * exp(-(1/k) ./ ((T + KtoC) .* (Tm - T - KtoC)));
+% Number should be zero where T = 0. 
+% Where T = 0, T should really equal NaN instead, but this yields an error
+% in the calculation of G.
+N(~mask) = 0; 
 
 %%
 
