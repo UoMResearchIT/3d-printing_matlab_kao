@@ -10,32 +10,38 @@ No = 63;
 k = 1 / 54978;
 
 t = 0:0.02:5;
-ntsteps = numel(t);
+n_tsteps = numel(t);
 T = 170 - 22 * t;
 
-% Pre-allocate arrays rather than resizing in the loops
-[G, r, R, v, N] = deal(zeros(1, ntsteps));
 
+%% Create matrices with columns for D1 -- D251, and rows for time.
+% Pre-allocate with zeros.
+delta_Rp = zeros(n_tsteps); % Change in radius of one crystal at each time step
+Rp = zeros(n_tsteps); % Current radius of one particle (crystal) at current time step
+Vp = zeros(n_tsteps); % Volume of one particle (crystal) at current time step
+
+%%
 % Growth rate
 T_threshold = 120;
-for i = 1:ntsteps
-	if T(i)>= T_threshold
+
+for i = 1:n_tsteps
+	if T(i) >= T_threshold
 		G(i)=(Goi*exp(-U/(Rg*(T(i)-30)))*exp(-Kgi*(T(i)+273.15+Tm)/(2*(T(i)+273.15)*(T(i)+273.15)*(Tm-T(i)-273.15))))/60;
 	else
 		G(i)=(Goii*exp(-U/(Rg*(T(i)-30)))*exp(-Kgii*(T(i)+273.15+Tm)/(2*(T(i)+273.15)*(T(i)+273.15)*(Tm-T(i)-273.15))))/60;
 	end
 	r(i)=G(i).*0.02;
-	R(i)=sum(r(1:i));
-	v(i)=((4/3)*pi)*R(i).^3;
+	Rp(i)=sum(r(1:i));
+	v(i)=((4/3)*pi)*Rp(i).^3;
 end
 
 % PLA nucleation
-for i=1:ntsteps
+for i=1:n_tsteps
 	N(i)=No*exp(-(1/k)/((T(i)+273.15)*(Tm-T(i)-273.15)));
 end
 
 % Rt(i).cumsum = cumsum(r(i:end)) = Rt(i)=struct('cumsum',cumsum(r(i:end)))
-for i = 1:ntsteps
+for i = 1:n_tsteps
 	Rt1(i).cumsum = cumsum(r(i:end));
 	V1(i).cumsum=((4/3)*pi*Rt1(i).cumsum.^3);
 	Vt1(i).cumsum=((4/3)*pi*round(N(i))*Rt1(i).cumsum.^3);
@@ -43,14 +49,14 @@ end
 
 % Calculate total volume, Vtot.
 Vtot1 = 0;
-for i = 1:ntsteps
+for i = 1:n_tsteps
 	V1 = Vt1(i).cumsum(end);
 	Vtot1 = Vtot1 + V1;
 end
 
 % calculate crystals volumes in each column (from Vtot2 to Vtot251) do not
 % need to plot them
-for i = 1:ntsteps
+for i = 1:n_tsteps
 	Rt2(i).cumsum = cumsum(r(i:end-1));
 	Vt2(i).cumsum=((4/3)*pi*round(N(i))*Rt2(i).cumsum.^3);
 	Rt3(i).cumsum = cumsum(r(i:end-2));
@@ -80,19 +86,19 @@ end
 
 % calculate total volumes in each column (from Vtot2 to Vtot251)
 Vtot2 = 0;
-for i = 1:ntsteps
+for i = 1:n_tsteps
 	V2 = Vt2(i).cumsum(end);
 	Vtot2 = Vtot2 + V2;
 end
 
 Vtot3 = 0;
-for i = 1:ntsteps
+for i = 1:n_tsteps
 	V3 = Vt3(i).cumsum(end);
 	Vtot3 = Vtot + V3;
 end
 
 Vtot4 = 0;
-for i = 1:ntsteps
+for i = 1:n_tsteps
 	V4 = Vt4(i).cumsum(end);
 	Vtot4 = Vtot + V4;
 end
@@ -114,7 +120,7 @@ xlabel('Time (second)');
 ylabel('Radius (�m)');
 
 figure(2);
-subplot(1,2,1);plot(t,R,'LineWidth',3);
+subplot(1,2,1);plot(t,Rp,'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Radius (�m)');
 set(gca,'ytick',0:0.01:0.18);
