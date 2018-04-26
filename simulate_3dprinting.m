@@ -17,8 +17,9 @@ T = 170 - 22 * t;
 [G, r, R, v, N] = deal(zeros(1, ntsteps));
 
 % Growth rate
+T_threshold = 120;
 for i = 1:ntsteps
-	if T(i)>=120
+	if T(i)>= T_threshold
 		G(i)=(Goi*exp(-U/(Rg*(T(i)-30)))*exp(-Kgi*(T(i)+273.15+Tm)/(2*(T(i)+273.15)*(T(i)+273.15)*(Tm-T(i)-273.15))))/60;
 	else
 		G(i)=(Goii*exp(-U/(Rg*(T(i)-30)))*exp(-Kgii*(T(i)+273.15+Tm)/(2*(T(i)+273.15)*(T(i)+273.15)*(Tm-T(i)-273.15))))/60;
