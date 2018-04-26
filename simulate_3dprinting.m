@@ -36,8 +36,8 @@ T_threshold = 120;   % Temperature threshold
 G = zeros(n_tsteps); % Growth rate
 above_threshold = T >= T_threshold;
 
-G_above = Goi * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgi .* (T + KtoC + Tm)/(2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
-G_below = Goii * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgii .* (T + KtoC + Tm)/(2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
+G_above = Goi * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgi .* (T + KtoC + Tm) ./ (2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
+G_below = Goii * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgii .* (T + KtoC + Tm) ./ (2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
 
 G(above_threshold) = G_above(above_threshold);
 G(~above_threshold) = G_below(~above_threshold);
