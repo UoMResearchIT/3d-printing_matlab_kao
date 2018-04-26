@@ -19,6 +19,12 @@ T = 170 - 22 * t;
 delta_Rp = zeros(n_tsteps); % Change in radius of one crystal at each time step
 Rp = zeros(n_tsteps); % Current radius of one particle (crystal) at current time step
 Vp = zeros(n_tsteps); % Volume of one particle (crystal) at current time step
+T_section = zeros(n_tsteps); % Temperature of current section (D1 ... D251) at current time
+T_section(:) = NaN;
+for i = 1:n_tsteps
+	last_section_step = n_tsteps -i +1;
+	T_section(i:end,i) = T(1:last_section_step);
+end
 
 %%
 % Growth rate
