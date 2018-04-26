@@ -11,21 +11,23 @@ k = 1 / 54978;
 
 t = 0:0.02:5;
 n_tsteps = numel(t);
-T = 170 - 22 * t;
+T_D1 = 170 - 22 * t; % Temperature time series for section D1
 
 
 %% Create matrices with columns for D1 -- D251, and rows for time.
 % Pre-allocate with zeros.
-delta_Rp = zeros(n_tsteps); % Change in radius of one crystal at each time step
-Rp = zeros(n_tsteps); % Current radius of one particle (crystal) at current time step
-Vp = zeros(n_tsteps); % Volume of one particle (crystal) at current time step
-T_section = zeros(n_tsteps); % Temperature of current section (D1 ... D251) at current time
-T_section(:) = NaN;
+delta_Rp = zeros(n_tsteps);  % Change in radius of one crystal at each time step
+Rp = zeros(n_tsteps);        % Current radius of one particle (crystal) at current time step
+Vp = zeros(n_tsteps);        % Volume of one particle (crystal) at current time step
+T = zeros(n_tsteps);         % Temperature of current section (D1 ... D251) at current time
+mask = zeros(n_tsteps);      % Mask array to filter data / non-data
+
 for i = 1:n_tsteps
 	last_section_step = n_tsteps -i +1;
-	T_section(i:end,i) = T(1:last_section_step);
+	T(i:end, i) = T_D1(1:last_section_step);
+	mask(i:end, i) = 1;
 end
-
+mask = mask == 1;            % Convert mask to logical
 %%
 % Growth rate
 T_threshold = 120;
