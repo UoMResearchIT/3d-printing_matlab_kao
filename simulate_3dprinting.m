@@ -8,8 +8,10 @@ Kgii = 5.51e5;
 Tm = 212 + 273.15;
 No = 63;
 k = 1 / 54978;
+KtoC = 273.15;
 
-t = 0:0.02:5;
+t_step = 0.02;
+t = 0:t_step:5;
 n_tsteps = numel(t);
 T_D1 = 170 - 22 * t; % Temperature time series for section D1
 
@@ -28,21 +30,26 @@ for i = 1:n_tsteps
 	mask(i:end, i) = 1;
 end
 mask = mask == 1;            % Convert mask to logical
+
+%% Growth rate
+T_threshold = 120;   % Temperature threshold
+G = zeros(n_tsteps); % Growth rate
+above_threshold = T >= T_threshold;
+
+G_above = Goi * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgi .* (T + KtoC + Tm)/(2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
+G_below = Goii * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgii .* (T + KtoC + Tm)/(2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
+
+G(above_threshold) = G_above(above_threshold);
+G(~above_threshold) = G_below(~above_threshold);
+G = G / 60;
+G(~mask) = NaN;
+
+%% Crystal size
+delta_Rp = G * t_step;
+Rp = cumsum(delta_Rp, 1, 'omitnan');
+Vp = 4/3 * pi * Rp.^3;
+
 %%
-% Growth rate
-T_threshold = 120;
-
-for i = 1:n_tsteps
-	if T(i) >= T_threshold
-		G(i)=(Goi*exp(-U/(Rg*(T(i)-30)))*exp(-Kgi*(T(i)+273.15+Tm)/(2*(T(i)+273.15)*(T(i)+273.15)*(Tm-T(i)-273.15))))/60;
-	else
-		G(i)=(Goii*exp(-U/(Rg*(T(i)-30)))*exp(-Kgii*(T(i)+273.15+Tm)/(2*(T(i)+273.15)*(T(i)+273.15)*(Tm-T(i)-273.15))))/60;
-	end
-	r(i)=G(i).*0.02;
-	Rp(i)=sum(r(1:i));
-	v(i)=((4/3)*pi)*Rp(i).^3;
-end
-
 % PLA nucleation
 for i=1:n_tsteps
 	N(i)=No*exp(-(1/k)/((T(i)+273.15)*(Tm-T(i)-273.15)));
