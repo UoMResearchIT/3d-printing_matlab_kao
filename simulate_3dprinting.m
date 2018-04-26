@@ -52,7 +52,7 @@ Vp = 4/3 * pi * Rp.^3;
 %%
 % PLA nucleation
 for i=1:n_tsteps
-	N(i)=No*exp(-(1/k)/((T(i)+273.15)*(Tm-T(i)-273.15)));
+	N(i)=No*exp(-(1/k)/((T_D1(i)+273.15)*(Tm-T_D1(i)-273.15)));
 end
 
 % Rt(i).cumsum = cumsum(r(i:end)) = Rt(i)=struct('cumsum',cumsum(r(i:end)))
@@ -126,7 +126,7 @@ figure(1);
 subplot(1,3,1);plot(t,G,'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Growth rate (�m s^-1)');
-subplot(1,3,2);plot(T,G,'LineWidth',3);
+subplot(1,3,2);plot(T_D1,G,'LineWidth',3);
 xlabel('Temperature (�C)');
 ylabel('Growth rate (�m s^-1)');
 axis([60,170,0,0.08]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse')
@@ -167,7 +167,7 @@ subplot(1,2,1);plot(t,N,'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Number of spherulities');
 axis([0,5,0,25]);set(gca,'xtick',0:0.5:5);set(gca,'ytick',0:2:24);
-subplot(1,2,2);plot(T,N,'LineWidth',3);
+subplot(1,2,2);plot(T_D1,N,'LineWidth',3);
 xlabel('Temperature (�C)');
 ylabel('Number of spherulities');
 axis([60,170,0,25]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse');set(gca,'ytick',0:2:24)
