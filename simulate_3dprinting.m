@@ -51,15 +51,15 @@ Vp = 4/3 * pi * Rp.^3;
 
 %%
 % PLA nucleation
-for i=1:n_tsteps
-	N(i)=No*exp(-(1/k)/((T_D1(i)+273.15)*(Tm-T_D1(i)-273.15)));
-end
+N_D1 = No * exp(-(1/k) ./ ((T_D1 + KtoC) .* (Tm - T_D1 - KtoC)));
+
+%%
 
 % Rt(i).cumsum = cumsum(r(i:end)) = Rt(i)=struct('cumsum',cumsum(r(i:end)))
 for i = 1:n_tsteps
 	Rt1(i).cumsum = cumsum(r(i:end));
 	V1(i).cumsum=((4/3)*pi*Rt1(i).cumsum.^3);
-	Vt1(i).cumsum=((4/3)*pi*round(N(i))*Rt1(i).cumsum.^3);
+	Vt1(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt1(i).cumsum.^3);
 end
 
 % Calculate total volume, Vtot.
@@ -73,30 +73,30 @@ end
 % need to plot them
 for i = 1:n_tsteps
 	Rt2(i).cumsum = cumsum(r(i:end-1));
-	Vt2(i).cumsum=((4/3)*pi*round(N(i))*Rt2(i).cumsum.^3);
+	Vt2(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt2(i).cumsum.^3);
 	Rt3(i).cumsum = cumsum(r(i:end-2));
-	Vt3(i).cumsum=((4/3)*pi*round(N(i))*Rt3(i).cumsum.^3);
+	Vt3(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt3(i).cumsum.^3);
 	Rt4(i).cumsum = cumsum(r(i:end-3));
-	Vt4(i).cumsum=((4/3)*pi*round(N(i))*Rt4(i).cumsum.^3);
+	Vt4(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt4(i).cumsum.^3);
 	Rt5(i).cumsum = cumsum(r(i:end-4));
-	Vt5(i).cumsum=((4/3)*pi*round(N(i))*Rt5(i).cumsum.^3);
+	Vt5(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt5(i).cumsum.^3);
 	Rt6(i).cumsum = cumsum(r(i:end-5));
-	Vt6(i).cumsum=((4/3)*pi*round(N(i))*Rt6(i).cumsum.^3);
+	Vt6(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt6(i).cumsum.^3);
 	Rt7(i).cumsum = cumsum(r(i:end-6));
-	Vt7(i).cumsum=((4/3)*pi*round(N(i))*Rt7(i).cumsum.^3);
+	Vt7(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt7(i).cumsum.^3);
 	Rt8(i).cumsum = cumsum(r(i:end-7));
-	Vt8(i).cumsum=((4/3)*pi*round(N(i))*Rt8(i).cumsum.^3);
+	Vt8(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt8(i).cumsum.^3);
 	Rt9(i).cumsum = cumsum(r(i:end-8));
-	Vt9(i).cumsum=((4/3)*pi*round(N(i))*Rt9(i).cumsum.^3);
+	Vt9(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt9(i).cumsum.^3);
 	Rt10(i).cumsum = cumsum(r(i:end-9));
-	Vt10(i).cumsum=((4/3)*pi*round(N(i))*Rt10(i).cumsum.^3);
+	Vt10(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt10(i).cumsum.^3);
 	Rt11(i).cumsum = cumsum(r(i:end-10));
-	Vt11(i).cumsum=((4/3)*pi*round(N(i))*Rt11(i).cumsum.^3);
+	Vt11(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt11(i).cumsum.^3);
 	Rt12(i).cumsum = cumsum(r(i:end-11));
-	Vt12(i).cumsum=((4/3)*pi*round(N(i))*Rt12(i).cumsum.^3);
+	Vt12(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt12(i).cumsum.^3);
 	.....................
 		Rt251(i).cumsum = cumsum(r(i:end-250));
-	Vt251(i).cumsum=((4/3)*pi*round(N(i))*Rt251(i).cumsum.^3);
+	Vt251(i).cumsum=((4/3)*pi*round(N_D1(i))*Rt251(i).cumsum.^3);
 end
 
 % calculate total volumes in each column (from Vtot2 to Vtot251)
@@ -163,11 +163,11 @@ ylabel('Spherical volume (�m^3)');
 set(gca,'ytick',0:0.002:0.024);
 
 figure(5);
-subplot(1,2,1);plot(t,N,'LineWidth',3);
+subplot(1,2,1);plot(t,N_D1,'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Number of spherulities');
 axis([0,5,0,25]);set(gca,'xtick',0:0.5:5);set(gca,'ytick',0:2:24);
-subplot(1,2,2);plot(T_D1,N,'LineWidth',3);
+subplot(1,2,2);plot(T_D1,N_D1,'LineWidth',3);
 xlabel('Temperature (�C)');
 ylabel('Number of spherulities');
 axis([60,170,0,25]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse');set(gca,'ytick',0:2:24)
