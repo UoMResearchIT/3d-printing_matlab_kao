@@ -10,10 +10,12 @@ k    = 1 / 54978;
 KtoC = 273.15;
 Tm   = 212 + KtoC;
 
-t_step   = 0.02;
-t        = 0:t_step:5;
-n_tsteps = numel(t);
-T_D1     = 170 - 22 * t; % Temperature time series for section D1
+% Variables
+t_step     = 0.02;         % Time step
+t          = 0:t_step:5;   % Time
+n_tsteps   = numel(t);     % Number of time steps
+n_sections = n_tsteps;     % Number of sections of material deposited
+T_D1       = 170 - 22 * t; % Temperature time series for section D1
 
 
 %% Pre-allocate temperature and mask matrices
@@ -21,8 +23,8 @@ T_D1     = 170 - 22 * t; % Temperature time series for section D1
 T = zeros(n_tsteps);                    % Temperature of current section (D1 ... D251) at current time
 mask = zeros(n_tsteps, 'logical');      % Mask array to filter data / non-data
 
-for i = 1:n_tsteps
-	last_section_step = n_tsteps -i +1;
+for i = 1:n_sections
+	last_section_step = n_sections -i +1;
 	T(i:end, i) = T_D1(1:last_section_step);
 	mask(i:end, i) = true;
 end
@@ -44,74 +46,89 @@ G(~mask) = NaN;
 % delta_Rp: Change in radius of one crystal at each time step
 delta_Rp = G * t_step;
 
-% Rp: Current radius of one particle (crystal) at current time step
-Rp = cumsum(delta_Rp, 1, 'omitnan');
+% Rp: Current radius of one particle (crystal) nucleated at t0
+Rp_sincet0 = cumsum(delta_Rp, 1, 'omitnan');
 
-%Vp: Volume of one particle (crystal) at current time step
-Vp = 4/3 * pi * Rp.^3;
+% delta_Vp: Change in volume of one particle (crystal) at each time step
+delta_Vp = 4/3 * pi * delta_Rp.^3;
 
 %% PLA nucleation
+% Total number of particles: not number of nucleated particles at current
+% time step
 N =  No * exp(-(1/k) ./ ((T + KtoC) .* (Tm - T - KtoC)));
+
 % Number should be zero where T = 0. 
-% Where T = 0, T should really equal NaN instead, but this yields an error
-% in the calculation of G.
+% This is becase where T = 0, it should actually equal NaN instead,
+% but this yields an error in the calculation of G.
+% Hence use mask afterwards to remove incorrect values.
 N(~mask) = 0; 
 
 %% Crystal volume
-V = N .* 4/3 * pi * Rp .^3; % Total volume of all crystals
+delta_V = N .* delta_Vp; % Change in total volume of all crystals
+Vp_sincet0 = cumsum(delta_Vp, 1, 'omitnan');
 
-%% Cumulative sums
-% Calculate cumulative sums of radius of one particle, and total crystal
-% volume.
-% This doesn't make sense to me -- are you sure this is what you want?
+%% Total volume accumulated since t = tn.
+V = zeros(n_tsteps);
+for col = 1:n_sections
+	for row = col:n_tsteps
+		V(row, col) = sum(delta_Vp(row:end, col), 1);
+	end
+end
 
-Rp_sum = cumsum(Rp, 1);
-V_sum = cumsum(V, 1);
+%% Total accumulated volume since t0
+Vsec = sum(V, 1); % Total accumulated volume in each section
+Vtot = sum(Vsec); % Total accumulated volume in all sections
 
 
-
-%% Plotting
-figure(1);
-subplot(1,3,1);plot(t,G(:,1),'LineWidth',3);
+%% Growth rate for one particle since t0, from D1.
+figure('Name', 'Growth rate for D1');
+subplot(1,3,1);
+plot(t,G(:,1),'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Growth rate ({\mu}m s^-1)');
-subplot(1,3,2);plot(T_D1,G(:,1),'LineWidth',3);
+subplot(1,3,2);
+plot(T_D1,G(:,1),'LineWidth',3);
 xlabel('Temperature (20^{\circ}C)');
 ylabel('Growth rate ({\mu}m s^-1)');
-axis([60,170,0,0.08]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse')
-subplot(1,3,3);plot(t,Rp(:,1),'LineWidth',3);
+axis([60,170,0,0.08]);
+set(gca,'xtick',60:50:170);
+set(gca,'xdir','reverse')
+subplot(1,3,3);
+plot(t,Rp_sincet0(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Radius ({\mu}m)');
+ylabel('Radius of one particle ({\mu}m)');
 
-figure(2);
-subplot(1,2,1);plot(t,Rp(:,1),'LineWidth',3);
+%% Cumulative size of one particle since t0, for section D1.
+figure('Name', 'Cumulative particle size since t0 for section D1');
+subplot(1,2,1);
+plot(t,Rp_sincet0(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Radius ({\mu}m)');
+ylabel('Radius of one particle ({\mu}m)');
 set(gca,'ytick',0:0.01:0.18);
-subplot(1,2,2);plot(t,Vp(:,1),'LineWidth',3);
+subplot(1,2,2);
+plot(t,Vp_sincet0(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Spherical volume ({\mu}m^3)');
-set(gca,'ytick',0:0.001:0.025);
+ylabel('Spherical volume of one particle ({\mu}m^3)');
 
-figure(3);
+%% Cumulative size of one particle since tn, for section D1.
+figure('Name', 'Cumulative particle size since tn for D1');
 hold on
 for i = 1:n_tsteps
-	plot(t(i:end), Rp(i:end,i),'LineWidth',1.25);
+	plot(t(i:end), cumsum(delta_Rp(i:end,1)),'LineWidth',1.25);
 end
 xlabel('Time (second)');
 ylabel('Radius ({\mu}m)');
-%set(gca,'ytick',0:0.01:0.18);
 
-figure(4);
+%% Cumulative volume of one particle since tn, for section D1.
+figure('Name', 'Cumulative particle volume since tn for D1');
 hold on
 for i=1:n_tsteps
-	plot(t(i:end), V(i:end,i),'LineWidth',1.25);
+	plot(t(i:end), cumsum(delta_Vp(i:end,1)),'LineWidth',1.25);
 end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
-set(gca,'ytick',0:0.002:0.024);
-
-figure(5);
+%% Number of particles
+figure('Name', 'Number of particles');
 subplot(1,2,1);plot(t,N(:,1),'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Number of spherulities');
@@ -120,23 +137,24 @@ subplot(1,2,2);plot(T(:,1),N(:,1),'LineWidth',3);
 xlabel('Temperature (20^{\circ}C)');
 ylabel('Number of spherulities');
 axis([60,170,0,25]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse');set(gca,'ytick',0:2:24)
-%%
-figure(6);
+
+%% Cumulative volume of all particles since tn, for section D1.
+figure('Name', 'Cumulative volume since tn');
 hold on
 for i=1:n_tsteps
-	plot(t(i:end),V_sum(i:end,i),'LineWidth',1.25);
+	plot(t(i:end),cumsum(delta_V(i:end,1)),'LineWidth',1.25);
 end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
-set(gca,'ytick',0:0.01:0.15);
-%%
-figure(7);
-start_times = [1, 26, 51, 101, 201];
+
+%% Selected cumulative volume since tn for section D1.
+figure('Name', 'Selected cumulative volume since tn');
+start_times = [1, 26, 51, 101, 151, 201];
 n_traces = length(start_times);
 hold on
 for i = 1:n_traces
 	start = start_times(i);
-	plot(t(start:end),V_sum(start:end,start), 'LineWidth',3)
+	plot(t(start:end),cumsum(delta_V(start:end,1)), 'LineWidth',3)
 end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
