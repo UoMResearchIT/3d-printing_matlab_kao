@@ -18,10 +18,7 @@ T_D1 = 170 - 22 * t; % Temperature time series for section D1
 
 %% Create matrices with columns for D1 -- D251, and rows for time.
 % Pre-allocate with zeros.
-delta_Rp = zeros(n_tsteps);  % Change in radius of one crystal at each time step
-Rp = zeros(n_tsteps);        % Current radius of one particle (crystal) at current time step
-Vp = zeros(n_tsteps);        % Volume of one particle (crystal) at current time step
-T = zeros(n_tsteps);         % Temperature of current section (D1 ... D251) at current time
+T = zeros(n_tsteps);                    % Temperature of current section (D1 ... D251) at current time
 mask = zeros(n_tsteps, 'logical');      % Mask array to filter data / non-data
 
 for i = 1:n_tsteps
@@ -44,8 +41,13 @@ G = G / 60;
 G(~mask) = NaN;
 
 %% Crystal size
+% delta_Rp: Change in radius of one crystal at each time step
 delta_Rp = G * t_step;
+
+% Rp: Current radius of one particle (crystal) at current time step
 Rp = cumsum(delta_Rp, 1, 'omitnan');
+
+%Vp: Volume of one particle (crystal) at current time step
 Vp = 4/3 * pi * Rp.^3;
 
 %% PLA nucleation
