@@ -1,23 +1,23 @@
 % Parameters
-U = 1500;
-Rg = 1.987;
-Goi = 3.98e7;
+U    = 1500;
+Rg   = 1.987;
+Goi  = 3.98e7;
 Goii = 4.81e11;
-Kgi = 2.55e5;
+Kgi  = 2.55e5;
 Kgii = 5.51e5;
-Tm = 212 + 273.15;
-No = 63;
-k = 1 / 54978;
+No   = 63;
+k    = 1 / 54978;
 KtoC = 273.15;
+Tm   = 212 + KtoC;
 
-t_step = 0.02;
-t = 0:t_step:5;
+t_step   = 0.02;
+t        = 0:t_step:5;
 n_tsteps = numel(t);
-T_D1 = 170 - 22 * t; % Temperature time series for section D1
+T_D1     = 170 - 22 * t; % Temperature time series for section D1
 
 
-%% Create matrices with columns for D1 -- D251, and rows for time.
-% Pre-allocate with zeros.
+%% Pre-allocate temperature and mask matrices
+% Columns for D1 -- D251, and rows for time.
 T = zeros(n_tsteps);                    % Temperature of current section (D1 ... D251) at current time
 mask = zeros(n_tsteps, 'logical');      % Mask array to filter data / non-data
 
