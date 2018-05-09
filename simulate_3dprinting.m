@@ -43,14 +43,21 @@ G = G / 60;
 G(~mask) = NaN;
 
 %% Crystal size
-% delta_Rp: Change in radius of one crystal at each time step
+% delta_Rp: Change (increase) in radius of one crystal at each time step
+% This is the same for all sizes of crystals (i.e. existing crystals, and
+% those nucleated at the current time step).
 delta_Rp = G * t_step;
 
-% Rp: Current radius of one particle (crystal) nucleated at t0
-Rp_sincet0 = cumsum(delta_Rp, 1, 'omitnan');
+% Rp: Current radius of one particle (crystal)
+% Nucleation time (tn) is the page number i.e. Rp(D, t, tn) is the radius
+% of one particle in section D, at time t, nucleated at time tn.
+Rp = zeros(n_tsteps, n_sections, n_tsteps);
+for tn = 1:n_tsteps
+    Rp(tn:end, :, tn) = cumsum(delta_Rp(tn:end, :), 1, 'omitnan');
+end
 
-% delta_Vp: Change in volume of one particle (crystal) at each time step
-delta_Vp = 4/3 * pi * delta_Rp.^3;
+% Vp: Volume of one particle (crystal) at each time step
+Vp = 4/3 * pi * Rp.^3;
 
 %% PLA nucleation
 % Total number of particles: not number of nucleated particles at current
@@ -63,22 +70,22 @@ N =  No * exp(-(1/k) ./ ((T + KtoC) .* (Tm - T - KtoC)));
 % Hence use mask afterwards to remove incorrect values.
 N(~mask) = 0; 
 
-%% Crystal volume
-delta_V = N .* delta_Vp; % Change in total volume of all crystals
-Vp_sincet0 = cumsum(delta_Vp, 1, 'omitnan');
-
-%% Total volume accumulated since t = tn.
-V = zeros(n_tsteps);
-for col = 1:n_sections
-	for row = col:n_tsteps
-		V(row, col) = sum(delta_Vp(row:end, col), 1);
-	end
+%% Accumulated volume
+V = zeros(n_tsteps, n_sections, n_tsteps);
+% V: Total volume of all crystals
+% V(t, D, tn) is the volume of all crystals nucleated at time tn, in
+% section D1, at time t.
+for tn = 1:n_tsteps
+    V(:, :, tn) = N(tn, :) .* Vp(:, :, tn);
 end
 
-%% Total accumulated volume since t0
-Vsec = sum(V, 1); % Total accumulated volume in each section
-Vtot = sum(Vsec); % Total accumulated volume in all sections
-
+%% Total volume accumulated since t = 0.
+% Vtot: total volume of all particles
+Vtot_nt = sum(V, 3);        % Sum of volume over all nucleation times
+Vtot_sec = sum(Vtot_nt, 2); % Sum of volume over all sections and nucleation times
+Vtot_t = sum(Vtot_nt, 1);   % Sum of volume over all time steps and nucleation times
+Vtot_all = sum(Vtot_t);     % Volume since t=0 for all particles.
+                            % This is the same as sum(Vtot_sec)
 
 %% Growth rate for one particle since t0, from D1.
 figure('Name', 'Growth rate for D1');
