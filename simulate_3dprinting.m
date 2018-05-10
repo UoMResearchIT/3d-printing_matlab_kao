@@ -88,7 +88,7 @@ Vtot_all = sum(Vtot_t);     % Volume since t=0 for all particles.
                             % This is the same as sum(Vtot_sec)
 
 %% Growth rate for one particle since t0, from D1.
-figure('Name', 'Growth rate for D1');
+figure('Name', 'Growth rate for particles in section D1');
 subplot(1,3,1);
 plot(t,G(:,1),'LineWidth',3);
 xlabel('Time (second)');
@@ -101,67 +101,66 @@ axis([60,170,0,0.08]);
 set(gca,'xtick',60:50:170);
 set(gca,'xdir','reverse')
 subplot(1,3,3);
-plot(t,Rp_sincet0(:,1),'LineWidth',3);
+plot(t,Rp(:,1,1),'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Radius of one particle ({\mu}m)');
 
-%% Cumulative size of one particle since t0, for section D1.
-figure('Name', 'Cumulative particle size since t0 for section D1');
+%% Size trajectory of one particle nucleated at t0, for section D1.
+figure('Name', 'Size trajectory for a particle nucleated at t0 in section D1');
 subplot(1,2,1);
-plot(t,Rp_sincet0(:,1),'LineWidth',3);
+plot(t,Rp(:,1,1),'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Radius of one particle ({\mu}m)');
 set(gca,'ytick',0:0.01:0.18);
 subplot(1,2,2);
-plot(t,Vp_sincet0(:,1),'LineWidth',3);
+plot(t,Vp(:,1,1),'LineWidth',3);
 xlabel('Time (second)');
 ylabel('Spherical volume of one particle ({\mu}m^3)');
 
-%% Cumulative size of one particle since tn, for section D1.
-figure('Name', 'Cumulative particle size since tn for D1');
+%% Size trajectory of one particle nucleated at tn, in section D1.
+figure('Name', 'Size trajectory for a particle nucleated at tn in section D1');
 hold on
-for i = 1:n_tsteps
-	plot(t(i:end), cumsum(delta_Rp(i:end,1)),'LineWidth',1.25);
+for tn = 1:n_tsteps
+	plot(t(tn:end), Rp(tn:end, 1, tn), 'LineWidth', 1.25);
 end
 xlabel('Time (second)');
 ylabel('Radius ({\mu}m)');
 
-%% Cumulative volume of one particle since tn, for section D1.
-figure('Name', 'Cumulative particle volume since tn for D1');
+%% Volume trajectory of one particle nucleated at tn, in section D1.
+figure('Name', 'Volume trajectory of one particle nucleated at tn in section D1');
 hold on
-for i=1:n_tsteps
-	plot(t(i:end), cumsum(delta_Vp(i:end,1)),'LineWidth',1.25);
+for tn=1:n_tsteps
+	plot(t(tn:end), Vp(tn:end, 1, tn), 'LineWidth', 1.25);
 end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
-%% Number of particles
-figure('Name', 'Number of particles');
+%% Number of particles nucleated in section D1 in each time step
+figure('Name', 'Number of particles nucleated in section D1');
 subplot(1,2,1);plot(t,N(:,1),'LineWidth',3);
 xlabel('Time (second)');
-ylabel('Number of spherulities');
+ylabel('Number of particles nucleated');
 axis([0,5,0,25]);set(gca,'xtick',0:0.5:5);set(gca,'ytick',0:2:24);
 subplot(1,2,2);plot(T(:,1),N(:,1),'LineWidth',3);
 xlabel('Temperature (20^{\circ}C)');
-ylabel('Number of spherulities');
+ylabel('Number of particles nucleated');
 axis([60,170,0,25]);set(gca,'xtick',60:10:170);set(gca,'xdir','reverse');set(gca,'ytick',0:2:24)
 
-%% Cumulative volume of all particles since tn, for section D1.
-figure('Name', 'Cumulative volume since tn');
+%% Total volume of all particles nucleated at tn, in section D1.
+figure('Name', 'Volume of particles nucleated at time tn in section D1');
 hold on
-for i=1:n_tsteps
-	plot(t(i:end),cumsum(delta_V(i:end,1)),'LineWidth',1.25);
+for nt=1:n_tsteps
+	plot(t(nt:end), V(nt:end, 1, nt), 'LineWidth', 1.25);
 end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
 
-%% Selected cumulative volume since tn for section D1.
-figure('Name', 'Selected cumulative volume since tn');
+%% Volume trajectory of all particles nucleated at selected tn in section D1.
+figure('Name', 'Volume of particles nucleated at selected times in section D1');
 start_times = [1, 26, 51, 101, 151, 201];
 n_traces = length(start_times);
 hold on
-for i = 1:n_traces
-	start = start_times(i);
-	plot(t(start:end),cumsum(delta_V(start:end,1)), 'LineWidth',3)
+for tn = [1, 26, 51, 101, 151, 201]
+	plot(t(tn:end), V(tn:end, 1, tn), 'LineWidth', 3)
 end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
