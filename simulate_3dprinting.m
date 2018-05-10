@@ -165,3 +165,16 @@ end
 xlabel('Time (second)');
 ylabel('Spherical volume ({\mu}m^3)');
 legend('from 0s --> 5s','from 0.5s --> 5s','from 1s --> 5s','from 2s --> 5s','from 3s --> 5s','from 4s --> 5s')	
+
+%% Animate volume trajectory from each nucleation step
+figure('Name', 'Total volume animation')
+for tn = 1:n_tsteps
+    imagesc(V(:, :, tn))
+    title(['Nucleation time = ', num2str(t(tn))])
+    xlabel('Section')
+    ylabel('Time step')
+    c = colorbar;
+    c.Label.String = 'Volume of particles nucleated at current time step';
+    caxis([0, 0.08])
+    drawnow
+end
