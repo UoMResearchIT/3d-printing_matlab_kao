@@ -49,7 +49,7 @@ G(~mask) = NaN;
 delta_Rp = G * t_step;
 
 % Rp: Current radius of one particle (crystal)
-% Nucleation time (tn) is the page number i.e. Rp(D, t, tn) is the radius
+% Nucleation time (tn) is the page number i.e. Rp(t, D, tn) is the radius
 % of one particle in section D, at time t, nucleated at time tn.
 Rp = zeros(n_tsteps, n_sections, n_tsteps);
 for tn = 1:n_tsteps
