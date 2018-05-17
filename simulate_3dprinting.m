@@ -7,8 +7,8 @@ Kgi  = 2.55e5;
 Kgii = 5.51e5;
 No   = 63;
 k    = 1 / 54978;
-KtoC = 273.15;
-Tm   = 212 + KtoC;
+CtoK = 273.15;
+Tm   = 212 + CtoK;
 
 % Variables
 t_step     = 0.02;         % Time step
@@ -34,8 +34,8 @@ T_threshold = 120;   % Temperature threshold
 G = zeros(n_tsteps); % Growth rate
 above_threshold = T >= T_threshold;
 
-G_above = Goi * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgi .* (T + KtoC + Tm) ./ (2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
-G_below = Goii * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgii .* (T + KtoC + Tm) ./ (2 * (T + KtoC).^2 .* (Tm - T - KtoC)));
+G_above = Goi * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgi .* (T + CtoK + Tm) ./ (2 * (T + CtoK).^2 .* (Tm - T - CtoK)));
+G_below = Goii * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgii .* (T + CtoK + Tm) ./ (2 * (T + CtoK).^2 .* (Tm - T - CtoK)));
 
 G(above_threshold) = G_above(above_threshold);
 G(~above_threshold) = G_below(~above_threshold);
@@ -62,7 +62,7 @@ Vp = 4/3 * pi * Rp.^3;
 %% PLA nucleation
 % Total number of particles: not number of nucleated particles at current
 % time step
-N =  No * exp(-(1/k) ./ ((T + KtoC) .* (Tm - T - KtoC)));
+N =  No * exp(-(1/k) ./ ((T + CtoK) .* (Tm - T - CtoK)));
 
 % Number should be zero where T = 0. 
 % This is becase where T = 0, it should actually equal NaN instead,
