@@ -11,11 +11,12 @@ CtoK = 273.15;
 Tm   = 212 + CtoK;
 
 % Variables
-t_step     = 0.02;         % Time step
-t          = 0:t_step:5;   % Time
-n_tsteps   = numel(t);     % Number of time steps
-n_sections = n_tsteps;     % Number of sections of material deposited
-T_D1       = 170 - 22 * t; % Temperature time series for section D1
+t_step     = 0.02;           % Time step
+t_end      = 20;             % End time
+t          = 0:t_step:t_end; % Time
+n_tsteps   = numel(t);       % Number of time steps
+n_sections = n_tsteps;       % Number of sections of material deposited
+T_D1       = 170 - 5.5 * t;  % Temperature time series for section D1
 
 
 %% Pre-allocate temperature and mask matrices
