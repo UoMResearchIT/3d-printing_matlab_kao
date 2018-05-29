@@ -89,3 +89,19 @@ for tn = 1:n_tsteps
     caxis([0, 0.08])
     drawnow
 end
+
+%% Accumulated crystal volume from all time steps: a function of section
+% This is the cumulative total crystal volume in each nucleation section
+% over all time steps.
+figure('Name', 'Cumulative volume over nucleation sections')
+plot(cumsum(Vtot_sec))
+xlabel('Section number')
+ylabel('Cumulative volume')
+title('Cumulative crystal volume by section')
+
+%% Cumulative crystal volume from all sections: a time series
+figure('Name', 'Cumulative crystal volume time series')
+plot(t, cumsum(Vtot_t))
+xlabel('Time (s)')
+ylabel('Cumulative crystal volume')
+title('Cumulative crystal volume time series')
