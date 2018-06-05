@@ -21,18 +21,18 @@ T_D1       = 170 - 5.5 * t;  % Temperature time series for section D1
 
 %% Pre-allocate temperature and mask matrices
 % Columns for D1 -- D251, and rows for time.
-T = zeros(n_tsteps);                    % Temperature of current section (D1 ... D251) at current time
-mask = zeros(n_tsteps, 'logical');      % Mask array to filter data / non-data
+T    = zeros(n_tsteps, n_sections);            % Temperature of current section (D1 ... D251) at current time
+mask = zeros(n_tsteps, n_sections, 'logical'); % Mask array to filter data / non-data
 
 for i = 1:n_sections
-	last_section_step = n_sections -i +1;
+	last_section_step = n_tsteps -i +1;
 	T(i:end, i) = T_D1(1:last_section_step);
 	mask(i:end, i) = true;
 end
 
 %% Growth rate
 T_threshold = 120;   % Temperature threshold
-G = zeros(n_tsteps); % Growth rate
+G = zeros(n_tsteps, n_sections); % Growth rate
 above_threshold = T >= T_threshold;
 
 G_above = Goi * exp(-U ./ (Rg * (T - 30))) .* exp(-Kgi .* (T + CtoK + Tm) ./ (2 * (T + CtoK).^2 .* (Tm - T - CtoK)));
