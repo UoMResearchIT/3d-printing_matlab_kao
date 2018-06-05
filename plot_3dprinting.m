@@ -94,14 +94,14 @@ end
 % This is the cumulative total crystal volume in each nucleation section
 % over all time steps.
 figure('Name', 'Cumulative volume over nucleation sections')
-plot(cumsum(Vtot_sec))
+plot(cumsum(Vtot_t))
 xlabel('Section number')
 ylabel('Cumulative volume')
 title('Cumulative crystal volume by section')
 
 %% Cumulative crystal volume from all sections: a time series
 figure('Name', 'Cumulative crystal volume time series')
-plot(t, cumsum(Vtot_t))
+plot(t, cumsum(Vtot_sec))
 xlabel('Time (s)')
 ylabel('Cumulative crystal volume')
 title('Cumulative crystal volume time series')
