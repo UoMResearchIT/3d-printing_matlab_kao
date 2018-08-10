@@ -264,7 +264,7 @@ box on
 
 clear G_above_4 G_below_4 G_above_15 G_below_15 G_above_25 G_below_25 G_above_3 G_below_3 G_above_6 G_below_6 G_above_8 G_below_8; 
 clear G_4 G_15 G_25 G_3 G_6 G_8;
-
+%% This is the section where MATLAB runs out of memory
 % Rp: Current radius of one particle (crystal)
 % Nucleation time (tn) is the page number i.e. Rp(t, D, tn) is the radius
 % of one particle in section D, at time t, nucleated at time tn.
