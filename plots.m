@@ -87,7 +87,7 @@ plot(t_25,Rp_25(:,1,1), 'c', 'LineWidth',3.5);
 hold on
 plot(t_3,Rp_3(:,1,1), 'm', 'LineWidth',4);
 hold on
-plot(t_4,Rp_4(:,1,1), 'b', 'LineWidth',3);
+plot(t_4,Rp_4_D1t1, 'b', 'LineWidth',3);
 hold on
 plot(t_6,Rp_6(:,1,1), 'g', 'LineWidth',2);
 hold on
@@ -103,7 +103,7 @@ plot(T_D1_25,Rp_25(:,1,1), 'c', 'LineWidth',3.5);
 hold on
 plot(T_D1_3,Rp_3(:,1,1), 'm', 'LineWidth',4);
 hold on
-plot(T_D1_4,Rp_4(:,1,1), 'b', 'LineWidth',3);
+plot(T_D1_4,Rp_4_D1t1, 'b', 'LineWidth',3);
 hold on
 plot(T_D1_6,Rp_6(:,1,1), 'g', 'LineWidth',2);
 hold on
