@@ -58,17 +58,16 @@ N_4 =  No_4 * exp(-(1/k) ./ ((T_4 + C2K) .* (Tm - T_4 - C2K)));
 N_4(~mask_4) = 0;
 
 %% Accumulated volume
-V_4 = zeros(n_tsteps_4, n_sections_4, n_tsteps_4);
 % V: Total volume of all crystals
-% V(t, D, tn) is the volume of all crystals nucleated at time tn, in
-% section D1, at time t.
+% Vtot_nt(t, D) is the volume of all crystals summed over all nucleation
+% times (tn) in section D1, at time t.
+Vtot_nt_4 = zeros(n_tsteps_4, n_sections_4);
 for tn = 1:n_tsteps_4
-    V_4(:, :, tn) = N_4(tn, :) .* Vp_4(:, :, tn);
+    Vtot_nt_4 = Vtot_nt_4 + N_4(tn, :) .* Vp_4(:, :, tn)
 end
 
 %% Total volume accumulated since t = 0.
 % Vtot: total volume of all particles
-Vtot_nt_4 = sum(V_4, 3);        % Sum of volume over all nucleation times
 Vtot_sec_4 = sum(Vtot_nt_4, 2); % Sum of volume over all sections and nucleation times
 Vtot_t_4 = sum(Vtot_nt_4, 1);   % Sum of volume over all time steps and nucleation times
 Vtot_all_4 = sum(Vtot_t_4);     % Volume since t=0 for all particles.
