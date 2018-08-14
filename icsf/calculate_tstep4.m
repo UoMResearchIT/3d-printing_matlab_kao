@@ -9,10 +9,10 @@ T_D1_4       = 170 - 3.33 * t_4; % Temperature time series for section D1
 % Columns for D1 -- to end, and rows for time.
 T_4 = zeros(n_tsteps_4);                    % Temperature of current section (D1 ... end) at current time
 mask_4 = zeros(n_tsteps_4, 'logical');      % Mask array to filter data / non-data
-for i = 1:250
-	last_section_step_4 = n_sections_4 -i +1;
-	T_4(i:end, i) = T_D1_4(1:last_section_step_4);
-	mask_4(i:end, i) = true;
+for sec = 1:n_sections_4
+	last_section_step_4 = n_sections_4 -sec +1;
+	T_4(sec:end, sec) = T_D1_4(1:last_section_step_4);
+	mask_4(sec:end, sec) = true;
 end
 
 %% Growth rate
