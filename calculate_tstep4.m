@@ -62,13 +62,35 @@ V_4 = zeros(n_tsteps_4, n_sections_4, n_tsteps_4);
 % V: Total volume of all crystals
 % V(t, D, tn) is the volume of all crystals nucleated at time tn, in
 % section D1, at time t.
+
+% Preallocate variable for new method:
+Vtot_nt_4_loop = zeros(n_tsteps_4, n_sections_4);
+
 for tn = 1:n_tsteps_4
+    % Original method:
     V_4(:, :, tn) = N_4(tn, :) .* Vp_4(:, :, tn);
+    
+    % New method:
+    Rp_4_tn = zeros(n_tsteps_4, n_sections_4);
+    Rp_4_tn(tn:end, :) = cumsum(delta_Rp_4(tn:end, :), 1, 'omitnan');
+    % Confirm results are the same as original method
+    assert(isequal(Rp_4_tn, Rp_4(:, :, tn)))
+    % Volume of one particle at current time step
+    Vp_4_tn = 4/3*pi * Rp_4_tn.^3;
+    % Confirm results are the same as original method
+    assert(isequal(Vp_4_tn, Vp_4(:, :, tn)))
+    Vtot_nt_4_loop = Vtot_nt_4_loop + N_4(tn, :).*Vp_4_tn(:, :);
+    % Confirm results are the same as original method
+    assert(isequal(N_4(tn, :).*Vp_4_tn(:, :), V_4(:, :, tn)))
 end
 
 %% Total volume accumulated since t = 0.
 % Vtot: total volume of all particles
 Vtot_nt_4 = sum(V_4, 3);        % Sum of volume over all nucleation times
+
+% Check old and new methods give the same answer
+assert(isequal(Vtot_nt_4, Vtot_nt_4_loop))
+
 Vtot_sec_4 = sum(Vtot_nt_4, 2); % Sum of volume over all sections and nucleation times
 Vtot_t_4 = sum(Vtot_nt_4, 1);   % Sum of volume over all time steps and nucleation times
 Vtot_all_4 = sum(Vtot_t_4);     % Volume since t=0 for all particles.
