@@ -1,5 +1,5 @@
 %% Variables for simulation
-t_step_4     = 0.02;         % Time step
+t_step_4     = 0.2;         % Time step
 t_4          = 0:t_step_4:33;   % Time
 n_tsteps_4   = numel(t_4);     % Number of time steps
 n_sections_4 = n_tsteps_4;     % Number of sections of material deposited
